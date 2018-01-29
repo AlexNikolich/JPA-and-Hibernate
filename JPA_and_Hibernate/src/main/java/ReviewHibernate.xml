@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<review>
+
+***Configuration***
+org.hibernate.cfg.Configuration - configuration feis required to use Hibernate
+
+hibernate.cfg.xml - define required database properties
+hibernate.properties - Java Property
+
+Configuration cfg = new Configuration().configure();
+
+Configuration cfg = new Configuration() - add mapping Classes
+	.addResource("Person.hbm.xml")
+    .addResource("Phone.hbm.xml");
+    
+Configuration cfg = new Configuration()- alternative way add mapping Classes
+	.addClass(org.hibernate.auction.Item.class)
+    .addClass(org.hibernate.auction.Bid.class);
+    
+Configuration cfg = new Configuration()- also allows you to specify configuration properties
+	.setProperty("hibernate.connection.datasource", "java:comp/env/jdbc/test")
+    .setProperty("hibernate.order_updates", "true");
+    
+<aaa>----------------------------------------------------</aaa>    
+    
+***SessionFactory***
+SessionFactory factory = cfg.buildSessionFactory();
+- heavy object, thread safe
+
+<aaa>----------------------------------------------------</aaa>
+
+
+***Session***
+Instances may exist in one of the following three states:
+1. transient − A new instance of a persistent class, 
+		which is not associated with a Session and 
+		has no representation in the database and 
+		no identifier value is considered transient by Hibernate.
+2.persistent − You can make a transient instance persistent by associating it with a Session.
+		 A persistent instance has a representation in the database, 
+		 an identifier value and is associated with a Session.
+3.detached − Once we close the Hibernate Session, 
+		the persistent instance will become a detached instance.
+
+
+Session session = factory.openSession();
+Transaction tx = null;
+
+try {
+   tx = session.beginTransaction();
+   // do some work
+  	 session.save(upate,saveOrUpdate,delete,get,beginTransaction,close.... )
+   tx.commit();
+}
+
+catch (Exception e) {
+   if (tx!=null) tx.rollback();
+   e.printStackTrace(); 
+} finally {
+   session.close();
+}
+
+<aaa>----------------------------------------------------</aaa>
+
+
+
+***EXAMPLE - hibernate.cfg.xml and className.hbm.xml***
+
+Employee.hbm.xml
+<hibernate-mapping>
+   <class name = "Employee" table = "EMPLOYEE">
+      
+      <meta attribute = "class-description">
+         This class contains the employee detail. 
+      </meta>
+      
+      <id name = "id" type = "int" column = "id">
+         <generator class="native"/>
+      </id>
+      
+      <property name = "firstName" column = "first_name" type = "string"/>
+      <property name = "lastName" column = "last_name" type = "string"/>
+      <property name = "salary" column = "salary" type = "int"/>
+      
+   </class>
+</hibernate-mapping>
+
+mapping type  		Java type				SQL Type
+integer 		int or java.lang.Integer 	INTEGER
+long 			long or java.lang.Long 		BIGINT
+short 			short or java.lang.Short 	SMALLINT
+float 			float or java.lang.Float 	FLOAT
+double 			double or java.lang.Double 	DOUBLE
+big_decimal		java.math.BigDecimal 		NUMERIC
+character 		java.lang.String 			CHAR(1)
+string 			java.lang.String 			VARCHAR
+byte 			byte or java.lang.Byte 		TINYINT
+boolean 		boolean or java.lang.Boolean 	BIT
+yes/no 			boolean or java.lang.Boolean 	CHAR(1) ('Y' or 'N')
+true/false 		boolean or java.lang.Boolean 	CHAR(1) ('T' or 'F')
+
+date 			java.util.Date or java.sql.Date 	DATE
+time 			java.util.Date or java.sql.Time 	TIME
+timestamp 		java.util.Date or java.sql.Timestamp 	TIMESTAMP
+calendar 		java.util.Calendar 	TIMESTAMP
+calendar_date 	java.util.Calendar 	DATE
+
+class 			java.lang.Class 			VARCHAR
+locale 			java.util.Locale 			VARCHAR
+timezone 		java.util.TimeZone 			VARCHAR
+currency 		java.util.Currency 			VARCHAR
+
+<aaa>----------------------------------------------------</aaa>
+
+hibernate.cfg.xml - in root folder
+
+<hibernate-configuration>
+   <session-factory>
+   
+      <property name = "hibernate.dialect">
+         org.hibernate.dialect.MySQLDialect
+      </property>
+      
+      <property name = "hibernate.connection.driver_class">
+         com.mysql.jdbc.Driver
+      </property>
+      
+      <!-- Assume test is the database name -->
+      
+      <property name = "hibernate.connection.url">
+         jdbc:mysql://localhost/test
+      </property>
+      
+      <property name = "hibernate.connection.username">
+         root
+      </property>
+      
+      <property name = "hibernate.connection.password">
+         root123
+      </property>
+      
+      <!-- List of XML mapping files -->
+      <mapping resource = "Employee.hbm.xml"/>
+      
+   </session-factory>
+</hibernate-configuration>
+
+
+</review>
+
+
+

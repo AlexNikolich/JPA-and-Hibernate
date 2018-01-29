@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<review>
+
+	Example of UNDIRECTIONAL mapping. Class Student and StudentDetails
+	StudentDetails has
+	/
+	@OneToOne(cascade = CascadeType.ALL) - If we have parent - child relation in java code is enough to 
+				save child with hibernate and parent will be also saved(delete, update as well).
+				- ALL you can change with merge, persist, remove, refresh. 
+				
+	@JoinColumn(name = "student_id") - This is owner and you can change the name of PK column
+	private Student student;
+	/
+	Cascade works StudentDetails => Student
+	NOT working Student => StudentDetails
+	
+	Example of DIRECTIONAL mapping. Class Student and StudentDetails
+	Add to Student class
+	/
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "student_id")
+	/
+	Both ways work Student => StudentDetails, StudentDetails => Student (save, update, remove...)
+</review>

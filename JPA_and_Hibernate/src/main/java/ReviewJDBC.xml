@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<jdbcsSimpleExampleYouMustBeJoking>
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.sql.DataSource;
+import com.mkyong.customer.dao.CustomerDAO;
+import com.mkyong.customer.model.Customer;
+
+public class JdbcCustomerDAO implements CustomerDAO
+{
+	private DataSource dataSource;
+
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
+
+	public void insert(Customer customer){
+
+		String sql = "INSERT INTO CUSTOMER " +
+				"(CUST_ID, NAME, AGE) VALUES (?, ?, ?)";
+		Connection conn = null;
+
+		try {
+			conn = dataSource.getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, customer.getCustId());
+			ps.setString(2, customer.getName());
+			ps.setInt(3, customer.getAge());
+			ps.executeUpdate();
+			ps.close();
+
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {}
+			}
+		}
+	}
+
+	public Customer findByCustomerId(int custId){
+
+		String sql = "SELECT * FROM CUSTOMER WHERE CUST_ID = ?";
+
+		Connection conn = null;
+
+		try {
+			conn = dataSource.getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, custId);
+			Customer customer = null;
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				customer = new Customer(
+					rs.getInt("CUST_ID"),
+					rs.getString("NAME"),
+					rs.getInt("Age")
+				);
+			}
+			rs.close();
+			ps.close();
+			return customer;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (conn != null) {
+				try {
+				conn.close();
+				} catch (SQLException e) {}
+			}
+		}
+	}
+}
+
+JDBA properties
+hibernate.connection.driver_class 	JDBC driver class
+hibernate.connection.url 			JDBC URL
+hibernate.connection.username 		database user
+hibernate.connection.password 		database user password
+hibernate.connection.pool_size 		maximum number of pooled connections
+</jdbcsSimpleExampleYouMustBeJoking>
+
+<aaa>----------------------------------------------------</aaa>
+
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
+             http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+             version="2.1">
+  <persistence-unit name="my-persistence-unit">
+    <description>Thougths on Java</description>
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <mapping-file>file:\\\C:\dev\wrk\XmlMapping\XmlMappings\myMappings.xml</mapping-file>
+    <properties>
+      <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
+
+      <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
+      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/test" />
+      <property name="javax.persistence.jdbc.user" value="postgres" />
+      <property name="javax.persistence.jdbc.password" value="postgres" />
+
+      <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>        
+    </properties>
+  </persistence-unit>
+</persistence>

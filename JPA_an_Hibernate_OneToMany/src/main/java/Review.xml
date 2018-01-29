@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<review>
+	- mappedBy - ako ga nemas pravi tri tablice 1,2 i mix 1_2
+		nalazi uvek u one table.
+ 	- Klasa koja sadrzi Many ili JoinColumn je owner class ( u njoj se nalazi foreign key)
+
+</review>
